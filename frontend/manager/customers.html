@@ -7,7 +7,8 @@
     <style>
         table { width: 100%; border-collapse: collapse; margin-top: 15px; background: white; }
         th, td { padding: 10px; border-bottom: 1px solid #ddd; text-align: left; }
-        th { background: #eee; }
+        th { background: #eee; cursor: pointer; user-select: none; }
+        th:hover { background: #ddd; }
         tr:hover { background: #f5f5f5; }
         .filter-bar { margin-top: 15px; display: flex; gap: 10px; align-items: center; flex-wrap: wrap; }
         .filter-bar input, .filter-bar select { padding: 8px; border-radius: 4px; border: 1px solid #ccc; }
@@ -27,7 +28,7 @@
             display: none;
         }
         .form-grid {
-            display: grid; grid-template-columns: 1fr 1fr; gap: 12px;
+            display: grid; grid-template-columns: 1fr 1fr 1fr; gap: 12px;
         }
         .form-field { margin-bottom: 0; }
         .form-field label { font-size: 12px; font-weight: bold; color: #555; display: block; }
@@ -37,10 +38,23 @@
         }
         .form-field textarea { min-height: 50px; resize: vertical; }
         .form-field.full-width { grid-column: 1 / -1; }
+        .form-field.two-col { grid-column: span 2; }
         .form-title { grid-column: 1 / -1; margin: 0 0 5px 0; color: #1565c0; }
+        .form-section {
+            grid-column: 1 / -1; font-size: 13px; font-weight: bold;
+            color: #1976d2; border-bottom: 1px solid #e0e0e0;
+            padding-bottom: 4px; margin-top: 8px;
+        }
+        .form-actions { grid-column: 1 / -1; display: flex; gap: 10px; margin-top: 10px; }
         .status-active { color: #388e3c; font-weight: bold; }
         .status-inactive { color: #999; font-weight: bold; }
-        .form-actions { grid-column: 1 / -1; display: flex; gap: 10px; margin-top: 10px; }
+        .schedule-badge {
+            display: inline-block; padding: 2px 8px; border-radius: 10px;
+            font-size: 0.8em; background: #e3f2fd; color: #1565c0; font-weight: bold;
+        }
+        .count-bar {
+            margin-top: 10px; font-size: 0.9em; color: #666;
+        }
     </style>
 </head>
 <body>
@@ -50,6 +64,22 @@
         <div class="filter-bar">
             <input id="filterSearch" type="text" placeholder="Search company, address, city..."
                    oninput="renderCustomerTable()">
+            <select id="filterWeek" onchange="renderCustomerTable()">
+                <option value="all">All Weeks</option>
+                <option value="1">Week 1</option>
+                <option value="2">Week 2</option>
+                <option value="3">Week 3</option>
+                <option value="4">Week 4</option>
+            </select>
+            <select id="filterDay" onchange="renderCustomerTable()">
+                <option value="all">All Days</option>
+                <option value="Monday">Monday</option>
+                <option value="Tuesday">Tuesday</option>
+                <option value="Wednesday">Wednesday</option>
+                <option value="Thursday">Thursday</option>
+                <option value="Friday">Friday</option>
+                <option value="Saturday">Saturday</option>
+            </select>
             <select id="filterStatus" onchange="renderCustomerTable()">
                 <option value="all">All Statuses</option>
                 <option value="1">Active</option>
@@ -59,15 +89,17 @@
             <button onclick="newCustomer()">+ New Customer</button>
         </div>
 
+        <div class="count-bar" id="countBar">Showing 0 customers</div>
+
         <table id="custTable">
             <thead>
                 <tr>
-                    <th>Company</th>
-                    <th>Address</th>
-                    <th>City</th>
-                    <th>Phone</th>
-                    <th>Route</th>
-                    <th>Status</th>
+                    <th onclick="sortTable('Company')">Company</th>
+                    <th onclick="sortTable('Address')">Address</th>
+                    <th onclick="sortTable('City')">City</th>
+                    <th onclick="sortTable('Phone')">Phone</th>
+                    <th onclick="sortTable('Week')">Wk/Day</th>
+                    <th onclick="sortTable('Active')">Status</th>
                     <th>Actions</th>
                 </tr>
             </thead>
@@ -79,7 +111,9 @@
                 <h3 class="form-title" id="custTitle">New Customer</h3>
                 <input type="hidden" id="cust_id">
 
-                <div class="form-field">
+                <!-- COMPANY INFO -->
+                <div class="form-section">Company Information</div>
+                <div class="form-field two-col">
                     <label>Company</label>
                     <input type="text" id="cust_company">
                 </div>
@@ -87,7 +121,7 @@
                     <label>Phone</label>
                     <input type="tel" id="cust_phone">
                 </div>
-                <div class="form-field">
+                <div class="form-field two-col">
                     <label>Address</label>
                     <input type="text" id="cust_address">
                 </div>
@@ -104,8 +138,50 @@
                     <input type="text" id="cust_postal">
                 </div>
                 <div class="form-field">
-                    <label>Default Route</label>
-                    <select id="cust_route"><option value="">None</option></select>
+                    <label>Province</label>
+                    <input type="text" id="cust_province" value="AB">
+                </div>
+
+                <!-- SCHEDULE -->
+                <div class="form-section">Delivery Schedule</div>
+                <div class="form-field">
+                    <label>Week</label>
+                    <select id="cust_week">
+                        <option value="1">Week 1</option>
+                        <option value="2">Week 2</option>
+                        <option value="3">Week 3</option>
+                        <option value="4">Week 4</option>
+                    </select>
+                </div>
+                <div class="form-field">
+                    <label>Day</label>
+                    <select id="cust_day">
+                        <option value="Monday">Monday</option>
+                        <option value="Tuesday">Tuesday</option>
+                        <option value="Wednesday">Wednesday</option>
+                        <option value="Thursday">Thursday</option>
+                        <option value="Friday">Friday</option>
+                        <option value="Saturday">Saturday</option>
+                    </select>
+                </div>
+                <div class="form-field">
+                    <label>Location</label>
+                    <input type="text" id="cust_location" placeholder="e.g. Back door, Loading dock">
+                </div>
+
+                <!-- DELIVERY DETAILS -->
+                <div class="form-section">Delivery Details</div>
+                <div class="form-field full-width">
+                    <label>Special Instructions</label>
+                    <textarea id="cust_special" rows="2" placeholder="Delivery-specific instructions..."></textarea>
+                </div>
+                <div class="form-field full-width">
+                    <label>Notes</label>
+                    <textarea id="cust_notes" rows="2" placeholder="General notes..."></textarea>
+                </div>
+                <div class="form-field">
+                    <label>Recieved By</label>
+                    <input type="text" id="cust_receivedby" placeholder="Contact person for delivery">
                 </div>
                 <div class="form-field">
                     <label>Status</label>
@@ -114,18 +190,18 @@
                         <option value="0">Inactive</option>
                     </select>
                 </div>
+
+                <!-- GPS -->
+                <div class="form-section">GPS Coordinates</div>
                 <div class="form-field">
-                    <label>Default Water Product</label>
-                    <select id="cust_water"><option value="">None</option></select>
+                    <label>Longitude</label>
+                    <input type="text" id="cust_lng" placeholder="-118.7946">
                 </div>
                 <div class="form-field">
-                    <label>Default Coffee Product</label>
-                    <select id="cust_coffee"><option value="">None</option></select>
+                    <label>Latittude</label>
+                    <input type="text" id="cust_lat" placeholder="55.1707">
                 </div>
-                <div class="form-field full-width">
-                    <label>Notes</label>
-                    <textarea id="cust_notes" rows="2"></textarea>
-                </div>
+
                 <div class="form-actions">
                     <button onclick="saveCustomer()">Save Customer</button>
                     <button class="btn-danger" onclick="cancelEdit()">Cancel</button>
