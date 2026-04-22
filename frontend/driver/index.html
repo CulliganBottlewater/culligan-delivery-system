@@ -1,0 +1,61 @@
+<!DOCTYPE html>
+<html>
+<head>
+  <meta charset="UTF-8">
+  <title>Driver Delivery App</title>
+  <link rel="stylesheet" href="../css/main.css">
+  <link rel="stylesheet" href="https://unpkg.com/leaflet@1.9.4/dist/leaflet.css">
+  <style>
+    #map { height: 60vh; margin-bottom: 10px; }
+    .toolbar button { margin-right: 5px; }
+    .layout { display: flex; gap: 10px; }
+    .sidebar { width: 35%; max-height: 80vh; overflow-y: auto; background: #fff; padding: 10px; border-radius: 8px; box-shadow: 0 2px 4px rgba(0,0,0,0.1); }
+    .stop-item { padding: 6px; border-bottom: 1px solid #eee; cursor: pointer; }
+    .stop-item.active { background: #e3f2fd; }
+    .stop-details { margin-top: 10px; }
+    .stop-actions button { margin-right: 5px; }
+    textarea { width: 100%; min-height: 60px; }
+  </style>
+</head>
+<body>
+  <h1>Driver Delivery App</h1>
+
+  <div class="toolbar">
+    <button id="btnBack">Back</button>
+    <button id="btnForward">Forward</button>
+    <button id="btnStartRoute">Start Route</button>
+    <button id="btnFinishRoute">Finish Route</button>
+    <button id="btnDirections">Directions</button>
+    <button id="btnGetCoords">Get Coordinates</button>
+  </div>
+
+  <div class="layout">
+    <div style="flex:1;">
+      <div>
+        <label>Route:</label>
+        <select id="routeSelect"></select>
+        <label>Date:</label>
+        <input type="date" id="routeDate">
+        <button id="btnLoadRoute">Load Route</button>
+      </div>
+      <div id="map"></div>
+    </div>
+
+    <div class="sidebar">
+      <h3>Stops</h3>
+      <div id="stopList"></div>
+
+      <div class="stop-details" id="stopDetails"></div>
+    </div>
+  </div>
+
+  <script src="https://unpkg.com/leaflet@1.9.4/dist/leaflet.js"></script>
+  <script src="../shared/storage.js"></script>
+  <script src="../shared/ui.js"></script>
+  <script src="../shared/mapping.js"></script>
+  <script src="../shared/geocode.js"></script>
+  <script src="../shared/legalLand.js"></script>
+  <script src="../shared/routeOptimizer.js"></script>
+  <script src="driver.js"></script>
+</body>
+</html>
