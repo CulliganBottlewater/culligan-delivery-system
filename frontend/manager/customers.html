@@ -1,0 +1,116 @@
+<!DOCTYPE html>
+<html>
+<head>
+  <meta charset="UTF-8">
+  <title>Customer Maintenance</title>
+  <link rel="stylesheet" href="../css/main.css">
+  <style>
+    table {
+      width: 100%;
+      border-collapse: collapse;
+      margin-top: 20px;
+      background: white;
+    }
+    th, td {
+      padding: 10px;
+      border-bottom: 1px solid #ddd;
+    }
+    th {
+      background: #eee;
+      text-align: left;
+    }
+    tr:hover {
+      background: #f5f5f5;
+    }
+    .form-box {
+      background: white;
+      padding: 15px;
+      border-radius: 8px;
+      margin-top: 20px;
+      box-shadow: 0 2px 4px rgba(0,0,0,0.1);
+    }
+    label {
+      font-weight: bold;
+      display: block;
+      margin-top: 10px;
+    }
+    input {
+      width: 100%;
+      padding: 8px;
+      margin-top: 5px;
+      border-radius: 4px;
+      border: 1px solid #ccc;
+    }
+    button {
+      margin-top: 15px;
+      padding: 10px 16px;
+      background: #1976d2;
+      color: white;
+      border: none;
+      border-radius: 4px;
+      cursor: pointer;
+    }
+    button:hover {
+      background: #0d47a1;
+    }
+  </style>
+</head>
+<body>
+
+  <div class="app-shell">
+    <h1>Customer Maintenance</h1>
+
+    <button onclick="loadCustomers()">Reload Customers</button>
+    <button onclick="newCustomer()">Add New Customer</button>
+
+    <table id="customerTable">
+      <thead>
+        <tr>
+          <th>Company</th>
+          <th>Address</th>
+          <th>City</th>
+          <th>Province</th>
+          <th>Postal Code</th>
+          <th>Email</th>
+          <th>Phone</th>
+          <th>Edit</th>
+        </tr>
+      </thead>
+      <tbody></tbody>
+    </table>
+
+    <div id="editBox" class="form-box" style="display:none;">
+      <h3 id="editTitle">Edit Customer</h3>
+
+      <label>Company:</label>
+      <input id="company">
+
+      <label>Address:</label>
+      <input id="address">
+
+      <label>City:</label>
+      <input id="city">
+
+      <label>Province:</label>
+      <input id="province">
+
+      <label>Postal Code:</label>
+      <input id="postalCode">
+
+      <label>Email:</label>
+      <input id="email">
+
+      <label>Phone:</label>
+      <input id="phone">
+
+      <button onclick="saveCustomer()">Save Customer</button>
+    </div>
+
+  </div>
+
+  <script src="../shared/storage.js"></script>
+  <script src="../shared/ui.js"></script>
+  <script src="customers.js"></script>
+
+</body>
+</html>
