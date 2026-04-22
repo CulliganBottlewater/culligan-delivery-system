@@ -1,0 +1,107 @@
+<!DOCTYPE html>
+<html>
+<head>
+  <meta charset="UTF-8">
+  <title>Product Maintenance</title>
+  <link rel="stylesheet" href="../css/main.css">
+  <style>
+    table {
+      width: 100%;
+      border-collapse: collapse;
+      margin-top: 20px;
+      background: white;
+    }
+    th, td {
+      padding: 10px;
+      border-bottom: 1px solid #ddd;
+    }
+    th {
+      background: #eee;
+      text-align: left;
+    }
+    tr:hover {
+      background: #f5f5f5;
+    }
+    .form-box {
+      background: white;
+      padding: 15px;
+      border-radius: 8px;
+      margin-top: 20px;
+      box-shadow: 0 2px 4px rgba(0,0,0,0.1);
+    }
+    label {
+      font-weight: bold;
+      display: block;
+      margin-top: 10px;
+    }
+    input {
+      width: 100%;
+      padding: 8px;
+      margin-top: 5px;
+      border-radius: 4px;
+      border: 1px solid #ccc;
+    }
+    button {
+      margin-top: 15px;
+      padding: 10px 16px;
+      background: #1976d2;
+      color: white;
+      border: none;
+      border-radius: 4px;
+      cursor: pointer;
+    }
+    button:hover {
+      background: #0d47a1;
+    }
+    .tabs {
+      margin-top: 20px;
+    }
+    .tabs button {
+      margin-right: 10px;
+      padding: 8px 14px;
+      background: #ccc;
+      border-radius: 4px;
+      border: none;
+      cursor: pointer;
+    }
+    .tabs button.active {
+      background: #1976d2;
+      color: white;
+    }
+  </style>
+</head>
+<body>
+
+  <div class="app-shell">
+    <h1>Product Maintenance</h1>
+
+    <div class="tabs">
+      <button id="tabWater" class="active" onclick="switchTab('water')">Water Products</button>
+      <button id="tabCoffee" onclick="switchTab('coffee')">Coffee Products</button>
+    </div>
+
+    <table id="productTable">
+      <thead>
+        <tr id="headerRow"></tr>
+      </thead>
+      <tbody></tbody>
+    </table>
+
+    <button onclick="addProduct()">Add New Product</button>
+
+    <div id="editBox" class="form-box" style="display:none;">
+      <h3 id="editTitle">Edit Product</h3>
+
+      <div id="editFields"></div>
+
+      <button onclick="saveProduct()">Save Product</button>
+    </div>
+
+  </div>
+
+  <script src="../shared/storage.js"></script>
+  <script src="../shared/ui.js"></script>
+  <script src="products.js"></script>
+
+</body>
+</html>
