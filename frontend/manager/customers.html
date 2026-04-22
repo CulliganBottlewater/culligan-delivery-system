@@ -1,116 +1,143 @@
-<!DOCTYPE html>
+﻿<!DOCTYPE html>
 <html>
 <head>
-  <meta charset="UTF-8">
-  <title>Customer Maintenance</title>
-  <link rel="stylesheet" href="../css/main.css">
-  <style>
-    table {
-      width: 100%;
-      border-collapse: collapse;
-      margin-top: 20px;
-      background: white;
-    }
-    th, td {
-      padding: 10px;
-      border-bottom: 1px solid #ddd;
-    }
-    th {
-      background: #eee;
-      text-align: left;
-    }
-    tr:hover {
-      background: #f5f5f5;
-    }
-    .form-box {
-      background: white;
-      padding: 15px;
-      border-radius: 8px;
-      margin-top: 20px;
-      box-shadow: 0 2px 4px rgba(0,0,0,0.1);
-    }
-    label {
-      font-weight: bold;
-      display: block;
-      margin-top: 10px;
-    }
-    input {
-      width: 100%;
-      padding: 8px;
-      margin-top: 5px;
-      border-radius: 4px;
-      border: 1px solid #ccc;
-    }
-    button {
-      margin-top: 15px;
-      padding: 10px 16px;
-      background: #1976d2;
-      color: white;
-      border: none;
-      border-radius: 4px;
-      cursor: pointer;
-    }
-    button:hover {
-      background: #0d47a1;
-    }
-  </style>
+    <meta charset="UTF-8">
+    <title>Customer Maintenance</title>
+    <link rel="stylesheet" href="../css/main.css">
+    <style>
+        table { width: 100%; border-collapse: collapse; margin-top: 15px; background: white; }
+        th, td { padding: 10px; border-bottom: 1px solid #ddd; text-align: left; }
+        th { background: #eee; }
+        tr:hover { background: #f5f5f5; }
+        .filter-bar { margin-top: 15px; display: flex; gap: 10px; align-items: center; flex-wrap: wrap; }
+        .filter-bar input, .filter-bar select { padding: 8px; border-radius: 4px; border: 1px solid #ccc; }
+        .filter-bar input { width: 220px; }
+        button {
+            padding: 10px 16px; background: #1976d2; color: white;
+            border: none; border-radius: 4px; cursor: pointer; margin-top: 5px;
+        }
+        button:hover { background: #0d47a1; }
+        .btn-danger { background: #d32f2f; }
+        .btn-danger:hover { background: #b71c1c; }
+        .btn-back { background: #757575; text-decoration: none; display: inline-block; margin-top: 15px; }
+        .btn-back:hover { background: #616161; }
+        .form-box {
+            background: white; padding: 20px; border-radius: 8px;
+            margin-top: 20px; box-shadow: 0 2px 6px rgba(0,0,0,0.12);
+            display: none;
+        }
+        .form-grid {
+            display: grid; grid-template-columns: 1fr 1fr; gap: 12px;
+        }
+        .form-field { margin-bottom: 0; }
+        .form-field label { font-size: 12px; font-weight: bold; color: #555; display: block; }
+        .form-field input, .form-field select, .form-field textarea {
+            width: 100%; padding: 10px; border: 1px solid #ccc;
+            border-radius: 4px; box-sizing: border-box; margin-top: 4px;
+        }
+        .form-field textarea { min-height: 50px; resize: vertical; }
+        .form-field.full-width { grid-column: 1 / -1; }
+        .form-title { grid-column: 1 / -1; margin: 0 0 5px 0; color: #1565c0; }
+        .status-active { color: #388e3c; font-weight: bold; }
+        .status-inactive { color: #999; font-weight: bold; }
+        .form-actions { grid-column: 1 / -1; display: flex; gap: 10px; margin-top: 10px; }
+    </style>
 </head>
 <body>
+    <div class="app-shell">
+        <h1>Customer Maintenance</h1>
 
-  <div class="app-shell">
-    <h1>Customer Maintenance</h1>
+        <div class="filter-bar">
+            <input id="filterSearch" type="text" placeholder="Search company, address, city..."
+                   oninput="renderCustomerTable()">
+            <select id="filterStatus" onchange="renderCustomerTable()">
+                <option value="all">All Statuses</option>
+                <option value="1">Active</option>
+                <option value="0">Inactive</option>
+            </select>
+            <button onclick="loadCustomers()">Reload</button>
+            <button onclick="newCustomer()">+ New Customer</button>
+        </div>
 
-    <button onclick="loadCustomers()">Reload Customers</button>
-    <button onclick="newCustomer()">Add New Customer</button>
+        <table id="custTable">
+            <thead>
+                <tr>
+                    <th>Company</th>
+                    <th>Address</th>
+                    <th>City</th>
+                    <th>Phone</th>
+                    <th>Route</th>
+                    <th>Status</th>
+                    <th>Actions</th>
+                </tr>
+            </thead>
+            <tbody></tbody>
+        </table>
 
-    <table id="customerTable">
-      <thead>
-        <tr>
-          <th>Company</th>
-          <th>Address</th>
-          <th>City</th>
-          <th>Province</th>
-          <th>Postal Code</th>
-          <th>Email</th>
-          <th>Phone</th>
-          <th>Edit</th>
-        </tr>
-      </thead>
-      <tbody></tbody>
-    </table>
+        <div id="editBox" class="form-box">
+            <div class="form-grid">
+                <h3 class="form-title" id="custTitle">New Customer</h3>
+                <input type="hidden" id="cust_id">
 
-    <div id="editBox" class="form-box" style="display:none;">
-      <h3 id="editTitle">Edit Customer</h3>
+                <div class="form-field">
+                    <label>Company</label>
+                    <input type="text" id="cust_company">
+                </div>
+                <div class="form-field">
+                    <label>Phone</label>
+                    <input type="tel" id="cust_phone">
+                </div>
+                <div class="form-field">
+                    <label>Address</label>
+                    <input type="text" id="cust_address">
+                </div>
+                <div class="form-field">
+                    <label>Email</label>
+                    <input type="email" id="cust_email">
+                </div>
+                <div class="form-field">
+                    <label>City</label>
+                    <input type="text" id="cust_city">
+                </div>
+                <div class="form-field">
+                    <label>Postal Code</label>
+                    <input type="text" id="cust_postal">
+                </div>
+                <div class="form-field">
+                    <label>Default Route</label>
+                    <select id="cust_route"><option value="">None</option></select>
+                </div>
+                <div class="form-field">
+                    <label>Status</label>
+                    <select id="cust_active">
+                        <option value="1">Active</option>
+                        <option value="0">Inactive</option>
+                    </select>
+                </div>
+                <div class="form-field">
+                    <label>Default Water Product</label>
+                    <select id="cust_water"><option value="">None</option></select>
+                </div>
+                <div class="form-field">
+                    <label>Default Coffee Product</label>
+                    <select id="cust_coffee"><option value="">None</option></select>
+                </div>
+                <div class="form-field full-width">
+                    <label>Notes</label>
+                    <textarea id="cust_notes" rows="2"></textarea>
+                </div>
+                <div class="form-actions">
+                    <button onclick="saveCustomer()">Save Customer</button>
+                    <button class="btn-danger" onclick="cancelEdit()">Cancel</button>
+                </div>
+            </div>
+        </div>
 
-      <label>Company:</label>
-      <input id="company">
-
-      <label>Address:</label>
-      <input id="address">
-
-      <label>City:</label>
-      <input id="city">
-
-      <label>Province:</label>
-      <input id="province">
-
-      <label>Postal Code:</label>
-      <input id="postalCode">
-
-      <label>Email:</label>
-      <input id="email">
-
-      <label>Phone:</label>
-      <input id="phone">
-
-      <button onclick="saveCustomer()">Save Customer</button>
+        <a class="btn-back" href="index.html" style="color:white; padding:10px 16px; border-radius:4px;">Back to Portal</a>
     </div>
 
-  </div>
-
-  <script src="../shared/storage.js"></script>
-  <script src="../shared/ui.js"></script>
-  <script src="customers.js"></script>
-
+    <script src="../shared/storage.js"></script>
+    <script src="../shared/ui.js"></script>
+    <script src="customers.js"></script>
 </body>
 </html>
